@@ -1,8 +1,6 @@
-from utils import *
+from utils import ALPHABET
 
 class Vigenere:
-
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     @staticmethod
     def encrypt(plain_text, key):
