@@ -1,6 +1,9 @@
 import re
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+# clean_string(joão 12teste!)
+# 'joaoteste'
+
 def clean_string(text):
     # Remove numbers and special characters
     text = re.sub('[^A-Za-z]+', ' ', text)

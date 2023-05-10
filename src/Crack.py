@@ -82,11 +82,15 @@ class VigenereCrack:
                 frequencies[i][ALPHABET.index(self.slices[i][j])] += 1
             for j in range(26):
                 frequencies[i][j] = frequencies[i][j] / len(self.slices[i])
+        
         key = ['A']*self.period
+        
         for i in range(self.period):
             for j in range(26):
                 testtable = frequencies[i][j:]+frequencies[i][:j]
                 if self.cosangle(self.char_frequency,testtable) > 0.9:
                     key[i] = ALPHABET[j]
         plaintext = Vigenere.decrypt(ciphertext,key)
-        print(plaintext)
+
+        print(f'Key: {"".join(key)}')
+        print(f'Mensgem:\n{plaintext}')

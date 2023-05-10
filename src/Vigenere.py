@@ -10,6 +10,8 @@ class Vigenere:
         ciphertext = ''
         for i in range(len(plain_text)):
             p = ALPHABET.index(plain_text[i])
+            # C | H | A | V | E
+            # K | E | Y | K | E
             k = ALPHABET.index(key[i%len(key)])
             c = (p + k) % 26
             ciphertext += ALPHABET[c]
