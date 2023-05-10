@@ -23,10 +23,10 @@ class VigenereCrack:
         1.974,0.074]
 
     def __init__(self, cipherText, language):
-        self.slices = []
-        self.period = 0
+        self.samples = []
+        self.key_size = 0
         self.char_frequency = self.get_char_frequency(language)
-        self.get_period(cipherText.upper())
+        self.get_key_size(cipherText.upper())
         self.crack(cipherText.upper())
         
     def get_char_frequency(self, language):
@@ -46,49 +46,56 @@ class VigenereCrack:
             total += counts[i]
         return 26*numer / (total*(total-1))
 
-    def get_period(self, ciphertext):
-        found = False
-        period = 0
+    def get_key_size(self, ciphertext):
+        size = 0
 
-        while not found:
-            period += 1
-            slices = ['']*period
+        # 1000 arbitrario
+        while size < 1000:
+            size += 1
+            samples = [''] * size
+            
             for i in range(len(ciphertext)):
-                slices[i%period] += ciphertext[i]
+                samples[i % size] += ciphertext[i]
+            
             sum = 0
-            for i in range(period):
-                sum += self.index_of_coincidence(slices[i])
-            ioc = sum / period
+            for i in range(size):
+                sum += self.index_of_coincidence(samples[i])
+            
+            ioc = sum / size
             if ioc > 1.6:
-                self.period = period
-                self.slices = slices
+                self.key_size = size
+                self.samples = samples
                 return
 
-    def cosangle(self,x,y):
+    def inner_dot_product(self,language_freq, sample_frequency):
         numerator = 0
-        lengthx2 = 0
-        lengthy2 = 0
-        for i in range(len(x)):
-            numerator += x[i]*y[i]
-            lengthx2 += x[i]*x[i]
-            lengthy2 += y[i]*y[i]
-        return numerator / sqrt(lengthx2*lengthy2)
+        language_freq_magnitude = 0
+        sample_freq_magnitude = 0
+
+        for i in range(len(language_freq)):
+            numerator += language_freq[i] * sample_frequency[i]
+            language_freq_magnitude += language_freq[i] * language_freq[i]
+            sample_freq_magnitude += sample_frequency[i] * sample_frequency[i]
+        
+        return numerator / sqrt(language_freq_magnitude * sample_freq_magnitude)
 
     def crack(self, ciphertext):
         frequencies = []
-        for i in range(self.period):
+        for i in range(self.key_size):
             frequencies.append([0]*26)
-            for j in range(len(self.slices[i])):
-                frequencies[i][ALPHABET.index(self.slices[i][j])] += 1
+
+            # char freq on sample
+            for j in range(len(self.samples[i])):
+                frequencies[i][ALPHABET.index(self.samples[i][j])] += 1
             for j in range(26):
-                frequencies[i][j] = frequencies[i][j] / len(self.slices[i])
+                frequencies[i][j] = frequencies[i][j] / len(self.samples[i])
         
-        key = ['A']*self.period
+        key = ['A'] * self.key_size
         
-        for i in range(self.period):
+        for i in range(self.key_size):
             for j in range(26):
                 testtable = frequencies[i][j:]+frequencies[i][:j]
-                if self.cosangle(self.char_frequency,testtable) > 0.9:
+                if self.inner_dot_product(self.char_frequency,testtable) > 0.9:
                     key[i] = ALPHABET[j]
         plaintext = Vigenere.decrypt(ciphertext,key)
 
