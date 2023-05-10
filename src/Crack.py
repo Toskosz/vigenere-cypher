@@ -44,7 +44,7 @@ class VigenereCrack:
         for i in range(26):
             numer += counts[i]*(counts[i]-1)
             total += counts[i]
-        return 26*numer / (total*(total-1))
+        return 26 * numer / (total*(total-1))
 
     def get_key_size(self, ciphertext):
         size = 0
@@ -62,7 +62,7 @@ class VigenereCrack:
                 sum += self.index_of_coincidence(samples[i])
             
             ioc = sum / size
-            if ioc > 1.6:
+            if ioc > 1.64:
                 self.key_size = size
                 self.samples = samples
                 return
@@ -94,7 +94,7 @@ class VigenereCrack:
         
         for i in range(self.key_size):
             for j in range(26):
-                testtable = frequencies[i][j:]+frequencies[i][:j]
+                testtable = frequencies[i][j:] + frequencies[i][:j]
                 if self.inner_dot_product(self.char_frequency,testtable) > 0.9:
                     key[i] = ALPHABET[j]
         plaintext = Vigenere.decrypt(ciphertext,key)
