@@ -2,7 +2,7 @@ import re
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 # clean_string(joão 12teste!)
-# 'joaoteste'
+# 'jooteste'
 
 def clean_string(text):
     # Remove numbers and special characters
